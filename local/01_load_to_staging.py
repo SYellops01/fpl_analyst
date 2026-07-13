@@ -188,11 +188,11 @@ try:
         )
         print(f">> {file} -> @{STAGE}")
         os.remove(full_path)
+        print(f">> Cleaned up {file}")
 finally:
     cur.close()
     conn.close()
     os.rmdir(output_dir)
-    print(f">> Cleaned up {file}")
 
 print(f"All files added to Snowflake stage {SNOWFLAKE_DB}.{SNOWFLAKE_SCHEMA}.{STAGE}")
 print("="*60)
