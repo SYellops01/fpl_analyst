@@ -75,7 +75,9 @@ SELECT
     NODE_ID,
     PROPS:fixture_id::INT AS FIXTURE_ID,
     PROPS:kickoff_time::TIMESTAMP_NTZ AS KICKOFF_TIME,
+    PROPS:home_team::INT AS HOME_TEAM,
     PROPS:home_team_score::INT AS TEAM_H_SCORE,
+    PROPS:away_team::INT AS AWAY_TEAM,
     PROPS:away_team_score::INT AS TEAM_A_SCORE
 FROM FPL_KG.KG_NODE
 WHERE NODE_TYPE = 'FIXTURE';
