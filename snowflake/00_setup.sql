@@ -235,3 +235,41 @@ CREATE OR REPLACE TABLE KG_EDGE
 --Define cluster key on commonly filtered columns for performance
 ALTER TABLE KG_NODE CLUSTER BY (NODE_TYPE);
 ALTER TABLE KG_EDGE CLUSTER BY (EDGE_ID, SRC_ID);
+
+
+/*
+================================================================================================================
+5. Create Tables for ontology metadata using DB_ENGINEER role, defining the context and business definitions that can be directly queried
+================================================================================================================
+*/
+
+CREATE OR REPLACE TABLE ONT_CLASS (
+    CLASS_NAME          STRING PRIMARY KEY,
+    IS_ABSTRACT         BOOLEAN,
+    PARENT_CLASS_NAME   STRING,
+    DESCRIPTION         STRING
+)
+    COMMENT = 'Catalog of entity (node) types and purpose, powering any questions related to metadata'
+;
+ 
+CREATE OR REPLACE TABLE ONT_RELATION_DEF (
+    RELATION_NAME       STRING PRIMARY KEY,
+    SOURCE_CLASS_NAME   STRING,
+    TARGET_CLASS_NAME   STRING,
+    CARDINALITY         STRING,
+    DESCRIPTION         STRING,
+    INVERSE_OF          STRING
+)
+    COMMENT = 'Catalog of relationships defined in KG_EDGE, powering any questions related to metadata'
+;
+ 
+CREATE OR REPLACE TABLE ONT_PROPERTY (
+    CLASS_NAME          STRING,
+    PROPERTY_NAME       STRING,
+    DATA_TYPE           STRING,
+    DESCRIPTION         STRING,
+    IS_MEASURE          BOOLEAN,
+    PRIMARY KEY (CLASS_NAME, PROPERTY_NAME)
+)
+    COMMENT = 'Catalog of queryable attributes for each entity (node), powering any questions related to metadata'
+;
