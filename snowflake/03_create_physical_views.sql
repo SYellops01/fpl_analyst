@@ -104,7 +104,7 @@ SELECT
     PROPS:creativity::NUMBER(10,2) AS CREATIVITY,
     PROPS:threat::NUMBER(10,2) AS THREAT,
     PROPS:ict_index::NUMBER(10,2) AS ICT_INDEX,
-    PROPS:points::INT AS POINTS,
+    PROPS:total_points::INT AS TOTAL_POINTS,
     PROPS:defensive_contribution::INT AS DEFENSIVE_CONTRIBUTION,
     PROPS:expected_goals::NUMBER(10,2) AS EXPECTED_GOALS,
     PROPS:expected_assists::NUMBER(10,2) AS EXPECTED_ASSISTS,
