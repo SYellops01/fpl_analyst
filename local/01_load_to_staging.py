@@ -89,6 +89,7 @@ def fetch_players(data, path):
     }
     rows = [{v: row.get(k) for k, v in col_map.items()} for row in players]
     _write_csv(rows, list(col_map.values()), path)
+    return [player["id"] for player in players]
 
 def fetch_fixtures(path):
     '''
@@ -106,29 +107,34 @@ def fetch_fixtures(path):
     rows = [{v: row.get(k) for k, v in col_map.items()} for row in fixtures]
     _write_csv(rows, list(col_map.values()), path)
 
-def fetch_gw_stats(path, num_gameweeks):
+def fetch_gw_stats(path, player_ids):
     '''
-    Extracts all gameweek scores for players from events API up to specified num_gameweeks and writes as JSON to the specified output path
+    Extracts all gameweek scores for players from events API for all specified player_ids
     '''
+    keep_columns = ['starts', 'minutes', 'total_points', 'goals_scored', 'assists','clean_sheets', 'goals_conceded', 'own_goals', 'penalties_saved',
+                'penalties_missed', 'yellow_cards', 'red_cards', 'saves', 'bonus','bps','influence', 
+                'creativity', 'threat', 'ict_index', 'defensive_contribution', 'expected_goals', 
+                'expected_assists', 'expected_goal_involvements', 'expected_goals_conceded']
+    
     with open(path, "w") as f:
-        for gw_num in range(1, num_gameweeks + 1):
-            url = f"{base_url}/event/{gw_num}/live/"
+        for player_id in player_ids:
+            url = f"{base_url}/element-summary/{player_id}/"
             try:
                 response = requests.get(url, timeout=15)
                 response.raise_for_status()
                 data = response.json()
                 
-                for player in data["elements"]:
-                    fixture_id = (player["explain"][0]["fixture"] if player.get("explain") else None)
+                for fixture in data['history']:
+                    stats = {k: v for k, v in fixture.items() if k in keep_columns}
                     record = {
-                        "PLAYER_ID": player["id"],
-                        "GAMEWEEK_ID": gw_num,
-                        "FIXTURE_ID": fixture_id,
-                        "STATS": player["stats"],
+                        "PLAYER_ID": player_id,
+                        "GAMEWEEK_ID": fixture["round"],
+                        "FIXTURE_ID": fixture["fixture"],
+                        "STATS": stats,
                     }
                     f.write(json.dumps(record) + "\n")
             except requests.exceptions.RequestException as e:
-                print(f"Gameweek {gw_num} error: {e}")
+                print(f"Player {player_id} error: {e}")
             time.sleep(0.2)
 
 
@@ -143,9 +149,9 @@ bootstrap = extract_bootstrap()
 gameweeks = fetch_gameweeks(bootstrap, output_dir / 'gameweeks.csv')
 teams = fetch_teams(bootstrap, output_dir / 'teams.csv')
 positions = fetch_positions(bootstrap, output_dir / 'positions.csv')
-players = fetch_players(bootstrap, output_dir / 'players.csv')
+player_ids = fetch_players(bootstrap, output_dir / 'players.csv')
 fixtures = fetch_fixtures(output_dir / 'fixtures.csv')
-gw_stats = fetch_gw_stats(output_dir / 'gw_stats.json', 38)
+gw_stats = fetch_gw_stats(output_dir / 'gw_stats.json', player_ids)
 print("FPL API data successfully extracted")
 print("="*60)
 
