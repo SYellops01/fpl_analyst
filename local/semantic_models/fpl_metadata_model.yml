@@ -1,1 +1,95 @@
 name: fpl_metadata_governance
+description: >
+  Exposes the FPL ontology's metadata (classes, relationships, properties) as a queryable semantic model, so users can ask questions relating to data availability, such as
+  "what entity types exist?" or "what does PLAYS_FOR mean?" without needing to read SQL DDL.
+tables:
+  - name: ont_class
+    description: The entity (node) types defined in the FPL ontology.
+    base_table:
+      database: FPL_ONTOLOGY_DB
+      schema: FPL_PRESENTATION
+      table: V_ONT_CLASS
+    dimensions:
+      - name: class_name
+        synonyms: ["entity type", "object type" "class type"]
+        expr: CLASS_NAME
+        data_type: text
+        description: The name of the ontology entity type (eg - TEAM, PLAYER)
+      - name: description
+        expr: DESCRIPTION
+        data_type: text
+        description: Description of the ontology entity type (eg - TEAM = A Premier League club.)
+
+  - name: ont_relation_def
+    description: The relationship (edge) types defined in the FPL ontology.
+    base_table:
+      database: FPL_ONTOLOGY_DB
+      schema: FPL_PRESENTATION
+      table: V_ONT_RELATION_DEF
+    dimensions:
+      - name: relation_name
+        synonyms: ["relationship type", "edge type", "relationship"]
+        expr: RELATION_NAME
+        description: The name of the relationship between two edges (eg - PLAYS_FOR).
+        data_type: text
+      - name: source_class_name
+        expr: SOURCE_CLASS_NAME
+        data_type: text
+        description: The name of the ontology entity type that acts as the source of this relationship (eg - PLAYER).
+      - name: target_class_name
+        expr: TARGET_CLASS_NAME
+        data_type: text
+        description: The name of the ontology entity type that acts as the target of this relationship (eg - TEAM).
+      - name: cardinality
+        expr: CARDINALITY
+        data_type: text
+        description: The cardinality of the relationship (eg - MANY_TO_ONE).
+      - name: description
+        expr: DESCRIPTION
+        data_type: text
+        description: A descritiption of the relationship (eg - The TEAM that a PLAYER currently PLAYS FOR).
+
+  - name: ont_property
+    description: The properties/attributes defined for each entity type.
+    base_table:
+      database: FPL_ONTOLOGY_DB
+      schema: FPL_PRESENTATION
+      table: V_ONT_PROPERTY
+    dimensions:
+      - name: class_name
+        synonyms: ["entity type", "object type" "class type"]
+        expr: CLASS_NAME
+        data_type: text
+        description: The name of the ontology entity type (eg - TEAM, PLAYER)
+      - name: property_name
+        synonyms: ["properties", "attributes" "dimensions"]
+        expr: PROPERTY_NAME
+        description: The properties defined for a given class (eg - STRENGTH)
+        data_type: text
+      - name: data_type
+        expr: DATA_TYPE
+        data_type: text
+        description: The data type of a given property (eg - INTEGER)
+      - name: description
+        expr: DESCRIPTION
+        data_type: text
+        description: A description of the given property (eg - Overall club difficulty rating on a scale of 1-5 used by the FPL algorithm - 1 denotes easiest teams and 5 the hardest)
+      - name: is_measure
+        expr: IS_MEASURE
+        data_type: boolean
+        description: A flag whether the property is a measure (TRUE) or a dimension (FALSE)
+
+verified_queries:
+  - name: list_entity_types
+    question: "What object types exist in the FPL ontology?"
+    sql: >
+      SELECT CLASS_NAME, DESCRIPTION
+      FROM FPL_PRESENTATION.V_ONT_CLASS
+      ORDER BY CLASS_NAME;
+
+  - name: explain_plays_for
+    question: "What does the PLAYS_FOR relationship mean?"
+    sql: >
+      SELECT RELATION_NAME, SOURCE_CLASS_NAME, TARGET_CLASS_NAME, DESCRIPTION
+      FROM FPL_PRESENTATION.V_ONT_RELATION_DEF
+      WHERE RELATION_NAME = 'PLAYS_FOR';
