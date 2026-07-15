@@ -56,6 +56,7 @@ INSERT INTO ONT_PROPERTY (CLASS_NAME, PROPERTY_NAME, DATA_TYPE, DESCRIPTION, IS_
     -- PLAYER
     ('PLAYER', 'SELECTED_BY_PERCENT', 'NUMBER(10,2)', 'Percent of FPL managers who currently own this player.', TRUE),
     ('PLAYER', 'BIRTH_DATE', 'DATE', 'The player''s date of birth.', FALSE),
+    ('PLAYER', 'PRICE', 'NUMBER(10,1)', 'The current price of the FPL player', TRUE),
  
     -- GAMEWEEK
     ('GAMEWEEK', 'DEADLINE_TIME', 'TIMESTAMP', 'The transfer deadline for this gameweek.', FALSE),
@@ -95,6 +96,7 @@ INSERT INTO ONT_PROPERTY (CLASS_NAME, PROPERTY_NAME, DATA_TYPE, DESCRIPTION, IS_
     ('PERFORMANCE', 'EXPECTED_GOALS_CONCEDED', 'NUMBER(10,2)', 'The number of expected goals against a player in a fixture', TRUE)
 ;
 
+
 /*
 ================================================================================================================
 2. Add views to FPL_PRESENTATION layer for querying by Cortex Analyst
@@ -117,7 +119,4 @@ CREATE OR REPLACE VIEW V_ONT_PROPERTY
     COMMENT = 'View containing the properties/attributes defined for each entity type.'
 AS
 SELECT * FROM FPL_KG.ONT_PROPERTY;
-
-SELECT RELATION_NAME, SOURCE_CLASS_NAME, TARGET_CLASS_NAME, DESCRIPTION
-      FROM FPL_PRESENTATION.V_ONT_RELATION_DEF
-      WHERE RELATION_NAME = 'PLAYS_FOR';
+    
