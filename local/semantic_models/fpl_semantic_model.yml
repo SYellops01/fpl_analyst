@@ -152,8 +152,11 @@ tables:
       table: V_TEAM
     primary_key:
       columns:
-        - TEAM_ID
+        - team_id
     dimensions:
+      - name: team_id
+        expr: TEAM_ID
+        data_type: number
       - name: team_name
         synonyms: ["club", "team", "squad"]
         expr: TEAM_NAME
@@ -204,8 +207,11 @@ tables:
       table: V_PLAYER
     primary_key:
       columns:
-        - PLAYER_ID
+        - player_id
     dimensions:
+      - name: player_id
+        expr: PLAYER_ID
+        data_type: number
       - name: player_name
         synonyms: ["player", "footballer", "person"]
         expr: PLAYER_NAME
@@ -222,7 +228,7 @@ tables:
         expr: SELECTED_BY_PERCENT
         data_type: float
         description: The percentage of FPL managers who currently own this player.
- 
+
   - name: position
     description: A playing position (Goalkeeper, Defender, Midfielder, Forward).
     base_table:
@@ -231,8 +237,11 @@ tables:
       table: V_POSITION
     primary_key:
       columns:
-        - POSITION_ID
+        - position_id
     dimensions:
+      - name: position_id
+        expr: POSITION_ID
+        data_type: number
       - name: position_name
         synonyms: ["position", "role"]
         expr: POSITION_NAME
@@ -248,7 +257,7 @@ tables:
         expr: NUM_PLAYERS
         data_type: number
         description: The number of FPL players classified within this position category.
- 
+
   - name: fixture
     description: A single Premier League match. Carries raw home/away TEAM_ID -- resolved to names via the fixture_to_home_team / fixture_to_away_team relationships below.
     base_table:
@@ -257,7 +266,11 @@ tables:
       table: V_FIXTURE
     primary_key:
       columns:
-        - FIXTURE_ID
+        - fixture_id
+    dimensions:
+      - name: fixture_id
+        expr: FIXTURE_ID
+        data_type: number
     time_dimensions:
       - name: kickoff_time
         synonyms: ["match date"]
@@ -292,8 +305,11 @@ tables:
       table: V_GAMEWEEK
     primary_key:
       columns:
-        - GAMEWEEK_ID
+        - gameweek_id
     dimensions:
+      - name: gameweek_id
+        expr: GAMEWEEK_ID
+        data_type: number
       - name: gameweek_name
         expr: GAMEWEEK_NAME
         data_type: text
@@ -341,7 +357,7 @@ relationships:
         right_column: PLAYER_ID
     join_type: inner
     relationship_type: many_to_one
- 
+
   - name: performance_to_fixture
     left_table: performance
     right_table: fixture
@@ -359,7 +375,7 @@ relationships:
         right_column: TEAM_ID
     join_type: inner
     relationship_type: many_to_one
- 
+
   - name: fixture_to_away_team
     left_table: fixture
     right_table: team
@@ -368,7 +384,7 @@ relationships:
         right_column: TEAM_ID
     join_type: inner
     relationship_type: many_to_one
- 
+
   - name: player_to_plays_for
     left_table: player
     right_table: plays_for
@@ -377,7 +393,7 @@ relationships:
         right_column: PLAYER_NODE_ID
     join_type: inner
     relationship_type: one_to_one
- 
+
   - name: plays_for_to_team
     left_table: plays_for
     right_table: team
@@ -386,7 +402,7 @@ relationships:
         right_column: NODE_ID
     join_type: inner
     relationship_type: many_to_one
- 
+
   - name: player_to_has_position
     left_table: player
     right_table: has_position
@@ -395,7 +411,7 @@ relationships:
         right_column: PLAYER_NODE_ID
     join_type: inner
     relationship_type: one_to_one
- 
+
   - name: has_position_to_position
     left_table: has_position
     right_table: position
@@ -404,7 +420,7 @@ relationships:
         right_column: NODE_ID
     join_type: inner
     relationship_type: many_to_one
- 
+
   - name: fixture_to_fixture_in_gameweek
     left_table: fixture
     right_table: fixture_in_gameweek
@@ -413,7 +429,7 @@ relationships:
         right_column: FIXTURE_NODE_ID
     join_type: inner
     relationship_type: one_to_one
- 
+
   - name: fixture_in_gameweek_to_gameweek
     left_table: fixture_in_gameweek
     right_table: gameweek
@@ -422,7 +438,7 @@ relationships:
         right_column: NODE_ID
     join_type: inner
     relationship_type: many_to_one
- 
+
   - name: gameweek_to_most_captained
     left_table: gameweek
     right_table: most_captained
@@ -431,7 +447,7 @@ relationships:
         right_column: GAMEWEEK_NODE_ID
     join_type: inner
     relationship_type: one_to_one
- 
+
   - name: most_captained_to_player
     left_table: most_captained
     right_table: player
@@ -440,7 +456,7 @@ relationships:
         right_column: NODE_ID
     join_type: inner
     relationship_type: many_to_one
- 
+
   - name: gameweek_to_most_vice_captained
     left_table: gameweek
     right_table: most_vice_captained
@@ -449,7 +465,7 @@ relationships:
         right_column: GAMEWEEK_NODE_ID
     join_type: inner
     relationship_type: one_to_one
- 
+
   - name: most_vice_captained_to_player
     left_table: most_vice_captained
     right_table: player
@@ -458,7 +474,7 @@ relationships:
         right_column: NODE_ID
     join_type: inner
     relationship_type: many_to_one
- 
+
   - name: gameweek_to_most_transferred_in
     left_table: gameweek
     right_table: most_transferred_in
@@ -467,7 +483,7 @@ relationships:
         right_column: GAMEWEEK_NODE_ID
     join_type: inner
     relationship_type: one_to_one
- 
+
   - name: most_transferred_in_to_player
     left_table: most_transferred_in
     right_table: player
@@ -476,7 +492,7 @@ relationships:
         right_column: NODE_ID
     join_type: inner
     relationship_type: many_to_one
- 
+
   - name: gameweek_to_most_selected
     left_table: gameweek
     right_table: most_selected
@@ -485,7 +501,7 @@ relationships:
         right_column: GAMEWEEK_NODE_ID
     join_type: inner
     relationship_type: one_to_one
- 
+
   - name: most_selected_to_player
     left_table: most_selected
     right_table: player
@@ -510,7 +526,7 @@ verified_queries:
     question: "Which forwards have scored the most total goals this season?"
     sql: >
       SELECT PLAYER_NAME, SUM(GOALS_SCORED) AS TOTAL_GOALS
-      FROM FPL_PRESENTATION.V_FPL_GAMEWEEK_PERFORMANCE
+      FROM FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_FPL_GAMEWEEK_PERFORMANCE
       WHERE POSITION_SHORT_NAME = 'FWD'
       GROUP BY PLAYER_NAME
       ORDER BY TOTAL_GOALS DESC
@@ -520,36 +536,36 @@ verified_queries:
     question: "Who was the most captained player in each gameweek?"
     sql: >
       SELECT gw.GAMEWEEK_NAME, p.PLAYER_NAME
-      FROM FPL_PRESENTATION.V_MOST_CAPTAINED mc
-      JOIN FPL_PRESENTATION.V_GAMEWEEK gw ON mc.GAMEWEEK_NODE_ID = gw.NODE_ID
-      JOIN FPL_PRESENTATION.V_PLAYER p ON mc.PLAYER_NODE_ID = p.NODE_ID
+      FROM FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_MOST_CAPTAINED mc
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_GAMEWEEK gw ON mc.GAMEWEEK_NODE_ID = gw.NODE_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_PLAYER p ON mc.PLAYER_NODE_ID = p.NODE_ID
       ORDER BY gw.GAMEWEEK_ID;
 
   - name: most_selected_player_by_gameweek
     question: "Who was the most selected player in gameweek 5?"
     sql: >
       SELECT p.PLAYER_NAME
-      FROM FPL_PRESENTATION.V_MOST_SELECTED ms
-      JOIN FPL_PRESENTATION.V_GAMEWEEK gw ON ms.GAMEWEEK_NODE_ID = gw.NODE_ID
-      JOIN FPL_PRESENTATION.V_PLAYER p ON ms.PLAYER_NODE_ID = p.NODE_ID
+      FROM FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_MOST_SELECTED ms
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_GAMEWEEK gw ON ms.GAMEWEEK_NODE_ID = gw.NODE_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_PLAYER p ON ms.PLAYER_NODE_ID = p.NODE_ID
       WHERE gw.GAMEWEEK_ID = 5;
- 
+
   - name: player_team_and_position
     question: "What team and position does Erling Haaland play?"
     sql: >
       SELECT p.PLAYER_NAME, t.TEAM_NAME, pos.POSITION_NAME
-      FROM FPL_PRESENTATION.V_PLAYER p
-      JOIN FPL_PRESENTATION.V_PLAYS_FOR pf ON p.NODE_ID = pf.PLAYER_NODE_ID
-      JOIN FPL_PRESENTATION.V_TEAM t ON pf.TEAM_NODE_ID = t.NODE_ID
-      JOIN FPL_PRESENTATION.V_HAS_POSITION hp ON p.NODE_ID = hp.PLAYER_NODE_ID
-      JOIN FPL_PRESENTATION.V_POSITION pos ON hp.POSITION_NODE_ID = pos.NODE_ID
+      FROM FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_PLAYER p
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_PLAYS_FOR pf ON p.NODE_ID = pf.PLAYER_NODE_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_TEAM t ON pf.TEAM_NODE_ID = t.NODE_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_HAS_POSITION hp ON p.NODE_ID = hp.PLAYER_NODE_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_POSITION pos ON hp.POSITION_NODE_ID = pos.NODE_ID
       WHERE p.PLAYER_NAME ILIKE '%Haaland%';
- 
+
   - name: club_attack_strength
     question: "Which clubs have the strongest home attack rating?"
     sql: >
       SELECT TEAM_NAME, STRENGTH_ATTACK_HOME
-      FROM FPL_PRESENTATION.V_TEAM
+      FROM FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_TEAM
       ORDER BY STRENGTH_ATTACK_HOME DESC
       LIMIT 10;
 
@@ -562,9 +578,9 @@ verified_queries:
               fix.HOME_TEAM AS team_id,
               fix.AWAY_TEAM AS oppo_team_id,
               gw.GAMEWEEK_ID AS gameweek_id
-          FROM FPL_PRESENTATION.V_FIXTURE fix 
-          JOIN FPL_PRESENTATION.V_FIXTURE_IN_GAMEWEEK fgw ON  fix.NODE_ID = fgw.FIXTURE_NODE_ID
-          JOIN FPL_PRESENTATION.V_GAMEWEEK gw ON fgw.GAMEWEEK_NODE_ID = gw.NODE_ID
+          FROM FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_FIXTURE fix 
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_FIXTURE_IN_GAMEWEEK fgw ON  fix.NODE_ID = fgw.FIXTURE_NODE_ID
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_GAMEWEEK gw ON fgw.GAMEWEEK_NODE_ID = gw.NODE_ID
               WHERE gw.GAMEWEEK_ID BETWEEN 10 AND 15
           UNION ALL
           (
@@ -572,9 +588,9 @@ verified_queries:
               fix.AWAY_TEAM AS team_id,
               fix.HOME_TEAM AS oppo_team_id,
               gw.GAMEWEEK_ID AS gameweek_id
-          FROM FPL_PRESENTATION.V_FIXTURE fix 
-          JOIN FPL_PRESENTATION.V_FIXTURE_IN_GAMEWEEK fgw ON  fix.NODE_ID = fgw.FIXTURE_NODE_ID
-          JOIN FPL_PRESENTATION.V_GAMEWEEK gw ON fgw.GAMEWEEK_NODE_ID = gw.NODE_ID
+          FROM FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_FIXTURE fix 
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_FIXTURE_IN_GAMEWEEK fgw ON  fix.NODE_ID = fgw.FIXTURE_NODE_ID
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_GAMEWEEK gw ON fgw.GAMEWEEK_NODE_ID = gw.NODE_ID
               WHERE gw.GAMEWEEK_ID BETWEEN 10 AND 15
           )
       )
@@ -582,108 +598,108 @@ verified_queries:
           team.TEAM_NAME,
           AVG(oppo.STRENGTH) as AVERAGE_STRENGTH
       FROM fix
-      JOIN FPL_PRESENTATION.V_TEAM team ON fix.TEAM_ID = team.TEAM_ID
-      JOIN FPL_PRESENTATION.V_TEAM oppo ON fix.OPPO_TEAM_ID = oppo.TEAM_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_TEAM team ON fix.TEAM_ID = team.TEAM_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_TEAM oppo ON fix.OPPO_TEAM_ID = oppo.TEAM_ID
       GROUP BY 1 ORDER BY 2;
 
-    - name: forward_weakest_defence
-      question: "Which forwards are playing the weakeast defence in gameweeks 15-17?"
-      sql: >
-        WITH fix AS
-        (
-            SELECT 
-                fix.HOME_TEAM AS team_id,
-                fix.AWAY_TEAM AS oppo_team_id,
-                gw.GAMEWEEK_ID AS gameweek_id,
-                oppo.STRENGTH_DEFENCE_AWAY AS opposition_defensive_strength
-            FROM FPL_PRESENTATION.V_FIXTURE fix 
-            JOIN FPL_PRESENTATION.V_FIXTURE_IN_GAMEWEEK fgw ON  fix.NODE_ID = fgw.FIXTURE_NODE_ID
-            JOIN FPL_PRESENTATION.V_GAMEWEEK gw ON fgw.GAMEWEEK_NODE_ID = gw.NODE_ID
-            JOIN FPL_PRESENTATION.V_TEAM oppo ON fix.AWAY_TEAM = oppo.TEAM_ID
-                WHERE gw.GAMEWEEK_ID BETWEEN 15 AND 17
-            UNION ALL
-            (
-            SELECT 
-                fix.AWAY_TEAM AS team_id,
-                fix.HOME_TEAM AS oppo_team_id,
-                gw.GAMEWEEK_ID AS gameweek_id,
-                oppo.STRENGTH_DEFENCE_HOME AS opposition_defensive_strength
-            FROM FPL_PRESENTATION.V_FIXTURE fix 
-            JOIN FPL_PRESENTATION.V_FIXTURE_IN_GAMEWEEK fgw ON  fix.NODE_ID = fgw.FIXTURE_NODE_ID
-            JOIN FPL_PRESENTATION.V_GAMEWEEK gw ON fgw.GAMEWEEK_NODE_ID = gw.NODE_ID
-            JOIN FPL_PRESENTATION.V_TEAM oppo ON fix.HOME_TEAM = oppo.TEAM_ID
-                WHERE gw.GAMEWEEK_ID BETWEEN 15 AND 17
-            )
-        )
-        , opposition_strength AS
-        (
-            SELECT 
-                fix.TEAM_ID,
-                avg(fix.OPPOSITION_DEFENSIVE_STRENGTH) as avg_opposition_def_strength
-            FROM fix
-            GROUP BY 1
-        )
-        SELECT
-            PLAYER_NAME,
-            TEAM_NAME,
-            AVG_OPPOSITION_DEF_STRENGTH
-        FROM opposition_strength os
-        JOIN FPL_PRESENTATION.V_TEAM team on os.TEAM_ID = team.TEAM_ID
-        JOIN FPL_PRESENTATION.V_PLAYS_FOR pf on team.NODE_ID = pf.TEAM_NODE_ID
-        JOIN FPL_PRESENTATION.V_PLAYER p ON pf.PLAYER_NODE_ID = p.NODE_ID
-        JOIN FPL_PRESENTATION.V_HAS_POSITION hp ON p.NODE_ID = hp.PLAYER_NODE_ID
-        JOIN FPL_PRESENTATION.V_POSITION pos on hp.POSITION_NODE_ID = pos.NODE_ID
-            WHERE POSITION_NAME = 'Forward'
-        ORDER BY AVG_OPPOSITION_DEF_STRENGTH ASC
-        ;
+  - name: forward_weakest_defence
+    question: "Which forwards are playing the weakest defence in gameweeks 15-17?"
+    sql: >
+      WITH fix AS
+      (
+          SELECT 
+              fix.HOME_TEAM AS team_id,
+              fix.AWAY_TEAM AS oppo_team_id,
+              gw.GAMEWEEK_ID AS gameweek_id,
+              oppo.STRENGTH_DEFENCE_AWAY AS opposition_defensive_strength
+          FROM FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_FIXTURE fix 
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_FIXTURE_IN_GAMEWEEK fgw ON  fix.NODE_ID = fgw.FIXTURE_NODE_ID
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_GAMEWEEK gw ON fgw.GAMEWEEK_NODE_ID = gw.NODE_ID
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_TEAM oppo ON fix.AWAY_TEAM = oppo.TEAM_ID
+              WHERE gw.GAMEWEEK_ID BETWEEN 15 AND 17
+          UNION ALL
+          (
+          SELECT 
+              fix.AWAY_TEAM AS team_id,
+              fix.HOME_TEAM AS oppo_team_id,
+              gw.GAMEWEEK_ID AS gameweek_id,
+              oppo.STRENGTH_DEFENCE_HOME AS opposition_defensive_strength
+          FROM FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_FIXTURE fix 
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_FIXTURE_IN_GAMEWEEK fgw ON  fix.NODE_ID = fgw.FIXTURE_NODE_ID
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_GAMEWEEK gw ON fgw.GAMEWEEK_NODE_ID = gw.NODE_ID
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_TEAM oppo ON fix.HOME_TEAM = oppo.TEAM_ID
+              WHERE gw.GAMEWEEK_ID BETWEEN 15 AND 17
+          )
+      )
+      , opposition_strength AS
+      (
+          SELECT 
+              fix.TEAM_ID,
+              avg(fix.OPPOSITION_DEFENSIVE_STRENGTH) as avg_opposition_def_strength
+          FROM fix
+          GROUP BY 1
+      )
+      SELECT
+          PLAYER_NAME,
+          TEAM_NAME,
+          AVG_OPPOSITION_DEF_STRENGTH
+      FROM opposition_strength os
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_TEAM team on os.TEAM_ID = team.TEAM_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_PLAYS_FOR pf on team.NODE_ID = pf.TEAM_NODE_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_PLAYER p ON pf.PLAYER_NODE_ID = p.NODE_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_HAS_POSITION hp ON p.NODE_ID = hp.PLAYER_NODE_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_POSITION pos on hp.POSITION_NODE_ID = pos.NODE_ID
+          WHERE POSITION_NAME = 'Forward'
+      ORDER BY AVG_OPPOSITION_DEF_STRENGTH ASC
+      ;
 
-    - name: defender_weakest_attack
-      question: "Which defenders are playing the weakeast defence in gameweeks 15-17?"
-      sql: >
-        WITH fix AS
-        (
-            SELECT 
-                fix.HOME_TEAM AS team_id,
-                fix.AWAY_TEAM AS oppo_team_id,
-                gw.GAMEWEEK_ID AS gameweek_id,
-                oppo.STRENGTH_ATTACK_AWAY AS opposition_attacking_strength
-            FROM FPL_PRESENTATION.V_FIXTURE fix 
-            JOIN FPL_PRESENTATION.V_FIXTURE_IN_GAMEWEEK fgw ON  fix.NODE_ID = fgw.FIXTURE_NODE_ID
-            JOIN FPL_PRESENTATION.V_GAMEWEEK gw ON fgw.GAMEWEEK_NODE_ID = gw.NODE_ID
-            JOIN FPL_PRESENTATION.V_TEAM oppo ON fix.AWAY_TEAM = oppo.TEAM_ID
-                WHERE gw.GAMEWEEK_ID BETWEEN 15 AND 17
-            UNION ALL
-            (
-            SELECT 
-                fix.AWAY_TEAM AS team_id,
-                fix.HOME_TEAM AS oppo_team_id,
-                gw.GAMEWEEK_ID AS gameweek_id,
-                oppo.STRENGTH_ATTACK_HOME AS opposition_attacking_strength
-            FROM FPL_PRESENTATION.V_FIXTURE fix 
-            JOIN FPL_PRESENTATION.V_FIXTURE_IN_GAMEWEEK fgw ON  fix.NODE_ID = fgw.FIXTURE_NODE_ID
-            JOIN FPL_PRESENTATION.V_GAMEWEEK gw ON fgw.GAMEWEEK_NODE_ID = gw.NODE_ID
-            JOIN FPL_PRESENTATION.V_TEAM oppo ON fix.HOME_TEAM = oppo.TEAM_ID
-                WHERE gw.GAMEWEEK_ID BETWEEN 15 AND 17
-            )
-        )
-        , opposition_strength AS
-        (
-            SELECT 
-                fix.TEAM_ID,
-                avg(fix.OPPOSITION_ATTACKING_STRENGTH) as avg_opposition_att_strength
-            FROM fix
-            GROUP BY 1
-        )
-        SELECT
-            PLAYER_NAME,
-            TEAM_NAME,
-            AVG_OPPOSITION_ATT_STRENGTH
-        FROM opposition_strength os
-        JOIN FPL_PRESENTATION.V_TEAM team on os.TEAM_ID = team.TEAM_ID
-        JOIN FPL_PRESENTATION.V_PLAYS_FOR pf on team.NODE_ID = pf.TEAM_NODE_ID
-        JOIN FPL_PRESENTATION.V_PLAYER p ON pf.PLAYER_NODE_ID = p.NODE_ID
-        JOIN FPL_PRESENTATION.V_HAS_POSITION hp ON p.NODE_ID = hp.PLAYER_NODE_ID
-        JOIN FPL_PRESENTATION.V_POSITION pos on hp.POSITION_NODE_ID = pos.NODE_ID
-            WHERE POSITION_NAME = 'Defender'
-        ORDER BY AVG_OPPOSITION_ATT_STRENGTH ASC
-        ;
+  - name: defender_weakest_attack
+    question: "Which defenders are playing the weakest attack in gameweeks 15-17?"
+    sql: >
+      WITH fix AS
+      (
+          SELECT 
+              fix.HOME_TEAM AS team_id,
+              fix.AWAY_TEAM AS oppo_team_id,
+              gw.GAMEWEEK_ID AS gameweek_id,
+              oppo.STRENGTH_ATTACK_AWAY AS opposition_attacking_strength
+          FROM FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_FIXTURE fix 
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_FIXTURE_IN_GAMEWEEK fgw ON  fix.NODE_ID = fgw.FIXTURE_NODE_ID
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_GAMEWEEK gw ON fgw.GAMEWEEK_NODE_ID = gw.NODE_ID
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_TEAM oppo ON fix.AWAY_TEAM = oppo.TEAM_ID
+              WHERE gw.GAMEWEEK_ID BETWEEN 15 AND 17
+          UNION ALL
+          (
+          SELECT 
+              fix.AWAY_TEAM AS team_id,
+              fix.HOME_TEAM AS oppo_team_id,
+              gw.GAMEWEEK_ID AS gameweek_id,
+              oppo.STRENGTH_ATTACK_HOME AS opposition_attacking_strength
+          FROM FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_FIXTURE fix 
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_FIXTURE_IN_GAMEWEEK fgw ON  fix.NODE_ID = fgw.FIXTURE_NODE_ID
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_GAMEWEEK gw ON fgw.GAMEWEEK_NODE_ID = gw.NODE_ID
+          JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_TEAM oppo ON fix.HOME_TEAM = oppo.TEAM_ID
+              WHERE gw.GAMEWEEK_ID BETWEEN 15 AND 17
+          )
+      )
+      , opposition_strength AS
+      (
+          SELECT 
+              fix.TEAM_ID,
+              avg(fix.OPPOSITION_ATTACKING_STRENGTH) as avg_opposition_att_strength
+          FROM fix
+          GROUP BY 1
+      )
+      SELECT
+          PLAYER_NAME,
+          TEAM_NAME,
+          AVG_OPPOSITION_ATT_STRENGTH
+      FROM opposition_strength os
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_TEAM team on os.TEAM_ID = team.TEAM_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_PLAYS_FOR pf on team.NODE_ID = pf.TEAM_NODE_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_PLAYER p ON pf.PLAYER_NODE_ID = p.NODE_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_HAS_POSITION hp ON p.NODE_ID = hp.PLAYER_NODE_ID
+      JOIN FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_POSITION pos on hp.POSITION_NODE_ID = pos.NODE_ID
+          WHERE POSITION_NAME = 'Defender'
+      ORDER BY AVG_OPPOSITION_ATT_STRENGTH ASC
+      ;
