@@ -13,6 +13,10 @@ from credentials import (get_sf_username, get_sf_password, get_sf_acc_identifier
 base_url = "https://fantasy.premierleague.com/api"
 output_dir = Path("./fpl_outputs")
 
+#Define .yml file names
+semantic_model_dir = Path("./semantic_models")
+semantic_model_files = ["fpl_metadata_model.yml", "fpl_semantic_model.yml"]
+
 
 # ---------------------------------------------------------------------------------
 # 1. Function to write to csv
@@ -170,6 +174,8 @@ SNOWFLAKE_WAREHOUSE = "LOAD_WH"
 SNOWFLAKE_DB        = "FPL_ONTOLOGY_DB"
 SNOWFLAKE_SCHEMA    = "FPL_STAGING"
 STAGE               = "FPL_DATA_STAGE"
+PRESENTATION_SCHEMA = "FPL_PRESENTATION"
+YML_STAGE = "SEMANTIC_MODELS"
 
 conn = snowflake.connector.connect(
     user=SNOWFLAKE_USER,
@@ -177,7 +183,6 @@ conn = snowflake.connector.connect(
     account=SNOWFLAKE_ACCOUNT,
     warehouse=SNOWFLAKE_WAREHOUSE,
     database=SNOWFLAKE_DB,
-    schema=SNOWFLAKE_SCHEMA,
 )
 cur = conn.cursor()
 print("Connection to Snowflake successful")
@@ -192,13 +197,21 @@ try:
         cur.execute(
             f"PUT file://{full_path} @{SNOWFLAKE_DB}.{SNOWFLAKE_SCHEMA}.{STAGE} AUTO_COMPRESS=TRUE OVERWRITE=TRUE"
         )
-        print(f">> {file} -> @{STAGE}")
+        print(f">> {file} -> @{SNOWFLAKE_SCHEMA}.{STAGE}")
         os.remove(full_path)
         print(f">> Cleaned up {file}")
+    #put .yml files to PRESENTATION_LAYER stage.
+    for file in semantic_model_files:
+        full_path = (semantic_model_dir / file).resolve()
+        cur.execute(
+            f"PUT file://{full_path} @{SNOWFLAKE_DB}.{PRESENTATION_SCHEMA}.{YML_STAGE} AUTO_COMPRESS=FALSE OVERWRITE=TRUE"
+        )
+        print(f">> YAML {file} -> @{PRESENTATION_SCHEMA}.{YML_STAGE}")
 finally:
     cur.close()
     conn.close()
     os.rmdir(output_dir)
 
-print(f"All files added to Snowflake stage {SNOWFLAKE_DB}.{SNOWFLAKE_SCHEMA}.{STAGE}")
+print("="*60)
+print(f"All files added to Snowflake stage")
 print("="*60)
