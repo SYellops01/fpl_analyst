@@ -94,3 +94,30 @@ INSERT INTO ONT_PROPERTY (CLASS_NAME, PROPERTY_NAME, DATA_TYPE, DESCRIPTION, IS_
     ('PERFORMANCE', 'EXPECTED_GOAL_INVOLVEMENTS', 'NUMBER(10,2)', 'The number of expected goal involvements for a player in a fixture (sum of expected goals and assists)', TRUE),
     ('PERFORMANCE', 'EXPECTED_GOALS_CONCEDED', 'NUMBER(10,2)', 'The number of expected goals against a player in a fixture', TRUE)
 ;
+
+/*
+================================================================================================================
+2. Add views to FPL_PRESENTATION layer for querying by Cortex Analyst
+================================================================================================================
+*/
+
+USE SCHEMA FPL_PRESENTATION;
+
+CREATE OR REPLACE VIEW V_ONT_CLASS
+    COMMENT = 'View containing the entity (node) types defined in the FPL ontology.'
+AS
+SELECT * FROM FPL_KG.ONT_CLASS;
+
+CREATE OR REPLACE VIEW V_ONT_RELATION_DEF
+    COMMENT = 'View containing the relationship (edge) types defined in the FPL ontology.'
+AS
+SELECT * FROM FPL_KG.ONT_RELATION_DEF;
+
+CREATE OR REPLACE VIEW V_ONT_PROPERTY
+    COMMENT = 'View containing the properties/attributes defined for each entity type.'
+AS
+SELECT * FROM FPL_KG.ONT_PROPERTY;
+
+SELECT RELATION_NAME, SOURCE_CLASS_NAME, TARGET_CLASS_NAME, DESCRIPTION
+      FROM FPL_PRESENTATION.V_ONT_RELATION_DEF
+      WHERE RELATION_NAME = 'PLAYS_FOR';
