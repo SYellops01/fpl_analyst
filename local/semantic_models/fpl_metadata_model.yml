@@ -93,3 +93,11 @@ verified_queries:
       SELECT RELATION_NAME, SOURCE_CLASS_NAME, TARGET_CLASS_NAME, DESCRIPTION
       FROM FPL_PRESENTATION.V_ONT_RELATION_DEF
       WHERE RELATION_NAME = 'PLAYS_FOR';
+
+  - name: list_performance_properties
+    question: "What properties does a performance record have?"
+    sql: >
+      SELECT PROPERTY_NAME, DATA_TYPE, DESCRIPTION
+      FROM FPL_PRESENTATION.V_ONT_PROPERTY
+      WHERE CLASS_NAME = 'PERFORMANCE'
+      ORDER BY PROPERTY_NAME;
