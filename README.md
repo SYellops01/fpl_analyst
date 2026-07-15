@@ -14,7 +14,7 @@ The pipeline can be run manually in the following order:
    pip install -r requirements.txt
    ::Add Snowflake credentials to credentials.py
    ```
-3. Run **local/01_load_to_staging.py** to stage API data in Snowflake
+3. Run **local/01_load_to_staging.py** to stage API data and YAML files in Snowflake stages.
 4. Run **snowflake/02_staging_to_physical.sql** to pass staged data into FPL_STAGING tables.
 5. Run **snowflake/03_create_physical_views.sql** to create the physical, queryable views for each edge and the relationships between these.
 6. Run **snowflake/04_generate_ontology_metadata.sql** to populate metadata tables for governance agent.
