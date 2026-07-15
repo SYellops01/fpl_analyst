@@ -177,7 +177,8 @@ CREATE TABLE IF NOT EXISTS RAW_PLAYERS
     SECOND_NAME VARCHAR(50),
     TEAM_ID INTEGER,
     BIRTH_DATE DATE,
-    SELECTED_BY_PERCENT NUMBER(10,2)
+    SELECTED_BY_PERCENT NUMBER(10,2),
+    PRICE NUMBER(10,1)
 )
     COMMENT = 'Raw data relating to FPL Player - output from fetch_players() function'
 ;
