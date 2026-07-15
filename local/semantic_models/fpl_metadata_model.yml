@@ -11,7 +11,7 @@ tables:
       table: V_ONT_CLASS
     dimensions:
       - name: class_name
-        synonyms: ["entity type", "object type" "class type"]
+        synonyms: ["entity type", "object type", "class type"]
         expr: CLASS_NAME
         data_type: text
         description: The name of the ontology entity type (eg - TEAM, PLAYER)
@@ -57,12 +57,12 @@ tables:
       table: V_ONT_PROPERTY
     dimensions:
       - name: class_name
-        synonyms: ["entity type", "object type" "class type"]
+        synonyms: ["entity type", "object type", "class type"]
         expr: CLASS_NAME
         data_type: text
         description: The name of the ontology entity type (eg - TEAM, PLAYER)
       - name: property_name
-        synonyms: ["properties", "attributes" "dimensions"]
+        synonyms: ["properties", "attributes", "dimensions"]
         expr: PROPERTY_NAME
         description: The properties defined for a given class (eg - STRENGTH)
         data_type: text
@@ -84,20 +84,20 @@ verified_queries:
     question: "What object types exist in the FPL ontology?"
     sql: >
       SELECT CLASS_NAME, DESCRIPTION
-      FROM FPL_PRESENTATION.V_ONT_CLASS
+      FROM FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_ONT_CLASS
       ORDER BY CLASS_NAME;
 
   - name: explain_plays_for
     question: "What does the PLAYS_FOR relationship mean?"
     sql: >
       SELECT RELATION_NAME, SOURCE_CLASS_NAME, TARGET_CLASS_NAME, DESCRIPTION
-      FROM FPL_PRESENTATION.V_ONT_RELATION_DEF
+      FROM FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_ONT_RELATION_DEF
       WHERE RELATION_NAME = 'PLAYS_FOR';
 
   - name: list_performance_properties
     question: "What properties does a performance record have?"
     sql: >
       SELECT PROPERTY_NAME, DATA_TYPE, DESCRIPTION
-      FROM FPL_PRESENTATION.V_ONT_PROPERTY
+      FROM FPL_ONTOLOGY_DB.FPL_PRESENTATION.V_ONT_PROPERTY
       WHERE CLASS_NAME = 'PERFORMANCE'
       ORDER BY PROPERTY_NAME;
