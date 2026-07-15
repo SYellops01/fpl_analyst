@@ -89,9 +89,14 @@ def fetch_players(data, path):
     col_map = {
         "id": "PLAYER_ID", "element_type": "POSITION_ID", "first_name": "FIRST_NAME",
         "second_name": "SECOND_NAME", "team": "TEAM_ID", "birth_date": "BIRTH_DATE",
-        "selected_by_percent": "SELECTED_BY_PERCENT",
+        "selected_by_percent": "SELECTED_BY_PERCENT", 'now_cost': 'PRICE'
     }
-    rows = [{v: row.get(k) for k, v in col_map.items()} for row in players]
+    rows = []
+    for row in players:
+        r = {v: row.get(k) for k, v in col_map.items()}
+        if r.get("PRICE") is not None:
+            r["PRICE"] = round(r["PRICE"] / 10,1)
+        rows.append(r)
     _write_csv(rows, list(col_map.values()), path)
     return [player["id"] for player in players]
 
@@ -145,6 +150,7 @@ def fetch_gw_stats(path, player_ids):
 # ---------------------------------------------------------------------------------
 # 3. Fetch API data locally
 # ---------------------------------------------------------------------------------
+
 print("="*60)
 print(" >> Extracting data from FPL API")
 
@@ -192,6 +198,7 @@ print("="*60)
 print("="*60)
 print(" >> Putting files to Snowflake")
 try:
+
     for file in temporary_files:
         full_path = (output_dir / file).resolve()
         cur.execute(
