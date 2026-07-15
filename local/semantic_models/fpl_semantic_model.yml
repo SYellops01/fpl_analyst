@@ -269,6 +269,12 @@ tables:
         data_type: float
         default_aggregation: avg
         description: The percentage of FPL managers who currently own this player.
+      - name: price
+        synonyms: ["current price", "cost"]
+        expr: PRICE
+        data_type: float
+        default_aggregation: avg
+        description: The current price of an FPL player.
 
   - name: position
     description: A playing position (Goalkeeper, Defender, Midfielder, Forward).
