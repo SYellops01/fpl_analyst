@@ -55,7 +55,7 @@ The pipeline can be run manually in the following order:
 - Knowledge graph tables are prefixed with 'KG_'.
 - Ontologies are prefixed with 'ONT_'.
 - Raw data from stages is prefixed with 'RAW_'
-- Within the FPL_ONTOLOGY_DB database, schemas follow the following naming: FPL_<LAYER>, where <LAYER> is STAGING, KG or PRESENTATION.
+- Within the FPL_ONTOLOGY_DB database, schemas follow the following naming: FPL_**LAYER**, where **LAYER** is STAGING, KG or PRESENTATION.
 
 ## Snowflake Semantic Layer
 *Insert image*
