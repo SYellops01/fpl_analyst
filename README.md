@@ -47,9 +47,14 @@ The pipeline can be run manually in the following order:
 
 # Solution Architecture
 ## Overall Architecture
-*Insert image*
+<img width="1099" height="627" alt="image" src="https://github.com/user-attachments/assets/3f40bc64-d5f7-4622-97f5-3941faf6dae0" />
 
-- 
+**Layer Summary:**
+- Layer 5 - Cortex Agent: Orchestrates semantic models and graph analytics tools
+- Layer 4 - Semantic Models: Knowledge Graph and Metadata
+- Layer 3 - Generated Views: Auto-generated ontology views from metadata.
+- Layer 2 - Ontology Metadata: Classes, relationships between classes, properties
+- Layer 1 - Physical Storage: KG_NODE (entities) + KG_EDGE (relationships)
 
 ## Naming Conventions
 - Views are prefixed with 'V_'.
@@ -60,8 +65,6 @@ The pipeline can be run manually in the following order:
 
 ## Snowflake Semantic Layer
 *Insert image*
-
-- Explanation of layers
 
 ## Example Questions
 
