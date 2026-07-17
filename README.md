@@ -12,7 +12,7 @@ This project wholly implements a Snowflake-native ontology platform that transfo
 # Key Features
 - Script fetching data from FPL API.
 - Physical storage of entities (nodes) and relationships (edges).
-- Defined ontology metadata.
+- Metadata-driven ontology view creation.
 - Two specialised Cortex Analyst semantic models powering a single Cortex Agent.
 - Scalable cloud warehouse powered by Snowflake.
 
@@ -35,9 +35,10 @@ The pipeline can be run manually in the following order:
    ```
 3. Run **local/01_load_to_staging.py** to stage API data and YAML files in Snowflake stages.
 4. Run **snowflake/02_staging_to_physical.sql** to pass staged data into FPL_STAGING tables.
-5. Run **snowflake/03_create_physical_views.sql** to create the physical, queryable views for each edge and the relationships between these.
-6. Run **snowflake/04_generate_ontology_metadata.sql** to populate metadata tables for governance agent.
-7. Run **snowflake/05_deploy_agent.sql** to deploy the agent to Snowflake Intelligence.
+5. Run **snowflake/03_generate_ontology_metadata.sql** to populate metadata tables for governance agent.
+6. Run **snowflake/04_generate_ontology_views.sql** to automatically create ontology views from metadata.
+7. Run **snowflake/05_create_consolidated_view.sql** to create a single, queryable view for Cortex Analyst
+8. Run **snowflake/06_deploy_agent.sql** to deploy the agent to Snowflake Intelligence.
 
 ## API Documentation
 - Get Bootstrap Data - https://www.postman.com/fplassist/fpl-assist/request/jwu0n11/boostrap-static
@@ -46,9 +47,14 @@ The pipeline can be run manually in the following order:
 
 # Solution Architecture
 ## Overall Architecture
-*Insert image*
+<img width="1099" height="627" alt="image" src="https://github.com/user-attachments/assets/3f40bc64-d5f7-4622-97f5-3941faf6dae0" />
 
-- 
+**Layer Summary:**
+- Layer 5 - Cortex Agent: Orchestrates semantic models and graph analytics tools
+- Layer 4 - Semantic Models: Knowledge Graph and Metadata
+- Layer 3 - Generated Views: Auto-generated ontology views from metadata.
+- Layer 2 - Ontology Metadata: Classes, relationships between classes, properties
+- Layer 1 - Physical Storage: KG_NODE (entities) + KG_EDGE (relationships)
 
 ## Naming Conventions
 - Views are prefixed with 'V_'.
@@ -58,9 +64,8 @@ The pipeline can be run manually in the following order:
 - Within the FPL_ONTOLOGY_DB database, schemas follow the following naming: FPL_**LAYER**, where **LAYER** is STAGING, KG or PRESENTATION.
 
 ## Snowflake Semantic Layer
-*Insert image*
+<img width="845" height="562" alt="image" src="https://github.com/user-attachments/assets/8e6f8091-ed9a-45f3-85b8-9e099c576fd2" />
 
-- Explanation of layers
 
 ## Example Questions
 
