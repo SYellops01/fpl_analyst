@@ -64,7 +64,8 @@ The pipeline can be run manually in the following order:
 - Within the FPL_ONTOLOGY_DB database, schemas follow the following naming: FPL_**LAYER**, where **LAYER** is STAGING, KG or PRESENTATION.
 
 ## Snowflake Semantic Layer
-*Insert image*
+<img width="845" height="562" alt="image" src="https://github.com/user-attachments/assets/8e6f8091-ed9a-45f3-85b8-9e099c576fd2" />
+
 
 ## Example Questions
 
