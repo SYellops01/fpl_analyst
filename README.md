@@ -2,7 +2,7 @@
 
 This project wholly implements a Snowflake-native ontology platform that transforms Snowflake from a warehouse into a platform that can model real-world concepts. For this project, I use data from the Fantasy Premier League API to create an FPL Assistant which can be directly queried, enabling managers to directly query FPL data, enabling transfer decisions to be quickly backed by decision intelligence:
 
-- *In the last three gameweeks, which defeneders most frequently reached 10 defensive contributions?*
+- *In the last three gameweeks, which defenders most frequently reached 10 defensive contributions?*
 - *Which three teams have the easiest fixtures in the next three gameweeks?*
 
 <img width="1068" height="561" alt="image" src="https://github.com/user-attachments/assets/b9be5f0e-496a-401c-8e2e-a4635eae0342" />
