@@ -12,7 +12,7 @@ This project wholly implements a Snowflake-native ontology platform that transfo
 # Key Features
 - Script fetching data from FPL API.
 - Physical storage of entities (nodes) and relationships (edges).
-- Defined ontology metadata.
+- Metadata-driven ontology view creation.
 - Two specialised Cortex Analyst semantic models powering a single Cortex Agent.
 - Scalable cloud warehouse powered by Snowflake.
 
@@ -35,9 +35,10 @@ The pipeline can be run manually in the following order:
    ```
 3. Run **local/01_load_to_staging.py** to stage API data and YAML files in Snowflake stages.
 4. Run **snowflake/02_staging_to_physical.sql** to pass staged data into FPL_STAGING tables.
-5. Run **snowflake/03_create_physical_views.sql** to create the physical, queryable views for each edge and the relationships between these.
-6. Run **snowflake/04_generate_ontology_metadata.sql** to populate metadata tables for governance agent.
-7. Run **snowflake/05_deploy_agent.sql** to deploy the agent to Snowflake Intelligence.
+5. Run **snowflake/03_generate_ontology_metadata.sql** to populate metadata tables for governance agent.
+6. Run **snowflake/04_generate_ontology_views.sql** to automatically create ontology views from metadata.
+7. Run **snowflake/05_create_consolidated_view.sql** to create a single, queryable view for Cortex Analyst
+8. Run **snowflake/06_deploy_agent.sql** to deploy the agent to Snowflake Intelligence.
 
 ## API Documentation
 - Get Bootstrap Data - https://www.postman.com/fplassist/fpl-assist/request/jwu0n11/boostrap-static
