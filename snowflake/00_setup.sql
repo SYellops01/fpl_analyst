@@ -256,7 +256,7 @@ CREATE TABLE IF NOT EXISTS ONT_CLASS (
     IS_ABSTRACT BOOLEAN,
     PARENT_CLASS_NAME STRING,
     DESCRIPTION STRING,
-    INCLUDE_RAW_PROPRS BOOLEAN DEFAULT FALSE
+    INCLUDE_RAW_PROPS BOOLEAN DEFAULT FALSE
 )
     COMMENT = 'Catalog of entity (node) types and purpose, powering any questions related to metadata'
 ;
