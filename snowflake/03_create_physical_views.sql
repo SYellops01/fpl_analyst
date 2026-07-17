@@ -50,7 +50,8 @@ SELECT
     PROPS:first_name::VARCHAR(50) AS FIRST_NAME,
     PROPS:second_name::VARCHAR(50) AS SECOND_NAME,
     PROPS:birth_date::DATE AS BIRTH_DATE,
-    PROPS:selected_by_percent::NUMBER(10,2) AS SELECTED_BY_PERCENT
+    PROPS:selected_by_percent::NUMBER(10,2) AS SELECTED_BY_PERCENT,
+    PROPS:price::NUMBER(10,2) AS PRICE
 FROM FPL_KG.KG_NODE
 WHERE NODE_TYPE = 'PLAYER';
  
@@ -75,8 +76,10 @@ SELECT
     NODE_ID,
     PROPS:fixture_id::INT AS FIXTURE_ID,
     PROPS:kickoff_time::TIMESTAMP_NTZ AS KICKOFF_TIME,
-    PROPS:team_h_score::INT AS TEAM_H_SCORE,
-    PROPS:team_a_score::INT AS TEAM_A_SCORE
+    PROPS:home_team::INT AS HOME_TEAM,
+    PROPS:home_team_score::INT AS TEAM_H_SCORE,
+    PROPS:away_team::INT AS AWAY_TEAM,
+    PROPS:away_team_score::INT AS TEAM_A_SCORE
 FROM FPL_KG.KG_NODE
 WHERE NODE_TYPE = 'FIXTURE';
  
@@ -245,6 +248,7 @@ SELECT
     perf.NODE_ID AS PERFORMANCE_NODE_ID,
     p.PLAYER_ID,
     p.PLAYER_NAME,
+    P.PRICE,
     pos.POSITION_NAME,
     pos.SHORT_NAME AS POSITION_SHORT_NAME,
     t.TEAM_ID,
@@ -254,6 +258,7 @@ SELECT
     gw.DEADLINE_TIME,
     fx.FIXTURE_ID,
     fx.KICKOFF_TIME,
+    perf.STARTED,
     perf.MINUTES,
     perf.GOALS_SCORED,
     perf.ASSISTS,

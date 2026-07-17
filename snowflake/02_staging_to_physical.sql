@@ -125,7 +125,8 @@ SELECT
         'second_name', SECOND_NAME,
         'team_id', TEAM_ID,
         'birth_date', BIRTH_DATE,
-        'selected_by_percent', SELECTED_BY_PERCENT
+        'selected_by_percent', SELECTED_BY_PERCENT,
+        'price', PRICE
     )
 FROM FPL_STAGING.RAW_PLAYERS;
 

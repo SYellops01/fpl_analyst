@@ -1,0 +1,597 @@
+name: fpl_knowledge_graph
+description: >
+  Fantasy Premier League knowledge graph semantic model built on top of FPL_ONTOLOGY_DB.FPL_PRESENTATION views,
+  using the pre-joined V_FPL_GAMEWEEK_PERFORMANCE one-big-table view (one row per player per fixture, with
+  team/position/gameweek/fixture already resolved). This lets Cortex Analyst answer most questions with zero
+  or one join instead of walking the raw KG_NODE/KG_EDGE graph. See fpl_semantic_model_graph_bridges.yml for
+  the fully graph-faithful version (most captained/selected/transferred-in, plays_for, has_position bridges).
+tables:
+  - name: performance
+    description: >
+      One row per player per fixture: minutes played, goals, assists, bonus
+      points, ICT index, and total FPL points, already joined to the player's
+      team, position, gameweek, and fixture. Primary table for
+      "who scored / who performed best" style questions.
+    base_table:
+      database: FPL_ONTOLOGY_DB
+      schema: FPL_PRESENTATION
+      table: V_FPL_GAMEWEEK_PERFORMANCE
+    primary_key:
+      columns:
+        - gameweek_id
+        - fixture_id
+    dimensions:
+      - name: player_id
+        expr: PLAYER_ID
+        data_type: number
+        description: The unique identifier for a player.
+      - name: player_name
+        synonyms: ["player", "footballer", "person"]
+        expr: PLAYER_NAME
+        data_type: text
+        description: The full name of the player.
+      - name: position_name
+        synonyms: ["position", "role"]
+        expr: POSITION_NAME
+        data_type: text
+        description: The full name of the position the player plays in (eg - Goalkeeper).
+      - name: position_short_name
+        synonyms: ["GK", "DEF", "MID", "FWD"]
+        expr: POSITION_SHORT_NAME
+        data_type: text
+        description: The shorthand name of the position the player plays in (eg - GKP).
+      - name: team_id
+        expr: TEAM_ID
+        data_type: number
+        description: The unique identifier of the Premier League Club the player plays for (eg - 1).
+      - name: team_name
+        synonyms: ["club", "team", "squad"]
+        expr: TEAM_NAME
+        data_type: text
+        description: The name of the Premier League Club the player plays for (eg - Arsenal).
+      - name: gameweek_name
+        synonyms: ["gameweek", "GW", "round"]
+        expr: GAMEWEEK_NAME
+        data_type: text
+        description: The name of the FPL gameweek/round of fixtures (eg - Gameweek 1).
+      - name: started
+        synonyms: ["starts", "starting 11", "starting XI", "starting", "lineup"]
+        expr: STARTED
+        data_type: boolean
+        description: Boolean value if the player is in the starting 11 (TRUE) or not (FALSE).
+    time_dimensions:
+      - name: deadline_time
+        synonyms: ["gameweek deadline"]
+        expr: DEADLINE_TIME
+        data_type: timestamp
+        description: The timestamp when the gameweek deadline closes for squad submission in UTC.
+      - name: kickoff_time
+        synonyms: ["match date", "kick off", "game start"]
+        expr: KICKOFF_TIME
+        data_type: timestamp
+        description: The timestamp when a match kicks off in UTC.
+    measures:
+      - name: gameweek_id
+        expr: GAMEWEEK_ID
+        data_type: number
+        description: The gameweek in which the player performance is recorded.
+      - name: fixture_id
+        expr: FIXTURE_ID
+        data_type: number
+        description: The fixture in which the player performance is recorded.
+      - name: minutes
+        expr: MINUTES
+        data_type: number
+        default_aggregation: sum
+        description: The number of minutes a player played during the fixture.
+      - name: goals_scored
+        synonyms: ["goals"]
+        expr: GOALS_SCORED
+        data_type: number
+        default_aggregation: sum
+        description: The number of goals a player scored during the fixture.
+      - name: assists
+        expr: ASSISTS
+        data_type: number
+        default_aggregation: sum
+        description: The number of assists registered by a player during the fixture.
+      - name: clean_sheets
+        expr: CLEAN_SHEETS
+        data_type: number
+        default_aggregation: sum
+        description: The number of clean sheets achieved by a player during the fixture.
+      - name: goals_conceded
+        expr: GOALS_CONCEDED
+        data_type: number
+        default_aggregation: sum
+        description: The number of goals conceded while a player was on the pitch during the fixture.
+      - name: yellow_cards
+        expr: YELLOW_CARDS
+        data_type: number
+        default_aggregation: sum
+        description: The number of yellow cards received by the player during the fixture.
+      - name: red_cards
+        expr: RED_CARDS
+        data_type: number
+        default_aggregation: sum
+        description: The number of red cards received by the player during the fixture.
+      - name: saves
+        expr: SAVES
+        data_type: number
+        default_aggregation: sum
+        description: The number of saves made by a goalkeeper during the fixture.
+      - name: bonus
+        synonyms: ["bonus points"]
+        expr: BONUS
+        data_type: number
+        default_aggregation: sum
+        description: The number of bonus points (0-3) collected by the player during the fixture.
+      - name: bps
+        synonyms: ["bonus points system score"]
+        expr: BPS
+        data_type: number
+        default_aggregation: sum
+        description: The number of points scored under the bonus points system by a player.
+      - name: ict_index
+        synonyms: ["ICT", "influence creativity threat"]
+        expr: ICT_INDEX
+        data_type: float
+        default_aggregation: avg
+        description: The ICT index (influence, creativity, threat) score for the player in the fixture.
+      - name: total_points
+        synonyms: ["FPL points", "points scored", "gameweek points", "fixture points", "points"]
+        expr: TOTAL_POINTS
+        data_type: number
+        default_aggregation: sum
+        description: The number of points achieved by the player during the fixture.
+      - name: defensive_contribution
+        synonyms: ["defensive contributions", "DEFCON points", "DEFCONs"]
+        expr: DEFENSIVE_CONTRIBUTION
+        data_type: number
+        default_aggregation: sum
+        description: The number of defensive contributions a player made during the fixture.
+      - name: expected_goals
+        synonyms: ["xG", "expected goals"]
+        expr: EXPECTED_GOALS
+        data_type: float
+        default_aggregation: sum
+        description: The number of expected goals registered by a player during the fixture.
+      - name: expected_assists
+        synonyms: ["xA", "expected assists"]
+        expr: EXPECTED_ASSISTS
+        data_type: float
+        default_aggregation: sum
+        description: The number of expected assists registered by a player during the fixture.
+      - name: expected_goal_involvements
+        synonyms: ["xGi", "expected goal involvements"]
+        expr: EXPECTED_GOAL_INVOLVEMENTS
+        data_type: float
+        default_aggregation: sum
+        description: The number of expected goal involvements (xG + xA) registered by a player during the fixture.
+      - name: expected_goals_conceded
+        synonyms: ["xGc", "expected goals conceded"]
+        expr: EXPECTED_GOALS_CONCEDED
+        data_type: float
+        default_aggregation: sum
+        description: The number of expected goals conceded by a player during the fixture.
+
+  - name: team
+    description: A Premier League club and its FPL strength ratings.
+    base_table:
+      database: FPL_ONTOLOGY_DB
+      schema: FPL_PRESENTATION
+      table: V_TEAM
+    primary_key:
+      columns:
+        - team_id
+    dimensions:
+      - name: team_id
+        expr: TEAM_ID
+        data_type: number
+        unique: true
+      - name: team_name
+        synonyms: ["club", "team", "squad"]
+        expr: TEAM_NAME
+        data_type: text
+        description: The name of the Premier League Team.
+    measures:
+      - name: strength
+        synonyms: ["difficulty", "fixture difficulty"]
+        expr: STRENGTH
+        data_type: number
+        default_aggregation: avg
+        description: 1-5 Difficulty Rating for the team, 5 being most difficult
+      - name: strength_overall_home
+        synonyms: ["home overall strength", "home strength"]
+        expr: STRENGTH_OVERALL_HOME
+        data_type: number
+        default_aggregation: avg
+        description: ELO rating of the strength of a team when playing at home.
+      - name: strength_overall_away
+        synonyms: ["away overall strength", "away strength"]
+        expr: STRENGTH_OVERALL_AWAY
+        data_type: number
+        default_aggregation: avg
+        description: ELO rating of the strength of a team when playing away.
+      - name: strength_attack_home
+        synonyms: ["home attacking strength"]
+        expr: STRENGTH_ATTACK_HOME
+        data_type: number
+        default_aggregation: avg
+        description: ELO rating of the strength of a team's attack when playing at home.
+      - name: strength_attack_away
+        synonyms: ["away attacking strength"]
+        expr: STRENGTH_ATTACK_AWAY
+        data_type: number
+        default_aggregation: avg
+        description: ELO rating of the strength of a team's attack when playing away.
+      - name: strength_defence_home
+        synonyms: ["home defensive strength"]
+        expr: STRENGTH_DEFENCE_HOME
+        data_type: number
+        default_aggregation: avg
+        description: ELO rating of the strength of a team's defence when playing at home.
+      - name: strength_defence_away
+        synonyms: ["away defensive strength"]
+        expr: STRENGTH_DEFENCE_AWAY
+        data_type: number
+        default_aggregation: avg
+        description: ELO rating of the strength of a team's defence when playing away.
+
+  - name: player
+    description: A footballer's biographical/ownership attributes, independent of any single gameweek.
+    base_table:
+      database: FPL_ONTOLOGY_DB
+      schema: FPL_PRESENTATION
+      table: V_PLAYER
+    primary_key:
+      columns:
+        - player_id
+    dimensions:
+      - name: player_id
+        expr: PLAYER_ID
+        data_type: number
+        unique: true
+      - name: player_name
+        synonyms: ["player", "footballer", "person"]
+        expr: PLAYER_NAME
+        data_type: text
+        description: Full name of the player as per FPL.
+    time_dimensions:
+      - name: birth_date
+        synonyms: ["date of birth", "birthday"]
+        expr: BIRTH_DATE
+        data_type: date
+    measures:
+      - name: selected_by_percent
+        synonyms: ["ownership", "percent owned"]
+        expr: SELECTED_BY_PERCENT
+        data_type: float
+        default_aggregation: avg
+        description: The percentage of FPL managers who currently own this player.
+      - name: price
+        synonyms: ["current price", "cost"]
+        expr: PRICE
+        data_type: float
+        default_aggregation: avg
+        description: The current price of an FPL player.
+
+  - name: position
+    description: A playing position (Goalkeeper, Defender, Midfielder, Forward).
+    base_table:
+      database: FPL_ONTOLOGY_DB
+      schema: FPL_PRESENTATION
+      table: V_POSITION
+    primary_key:
+      columns:
+        - position_id
+    dimensions:
+      - name: position_id
+        expr: POSITION_ID
+        data_type: number
+        unique: true
+      - name: position_name
+        synonyms: ["position", "role"]
+        expr: POSITION_NAME
+        data_type: text
+        description: The long-form version of the player's position.
+      - name: short_name
+        synonyms: ["GKP", "DEF", "MID", "FWD"]
+        expr: SHORT_NAME
+        data_type: text
+        description: The short-form version of the player's position.
+    measures:
+      - name: num_players
+        expr: NUM_PLAYERS
+        data_type: number
+        default_aggregation: sum
+        description: The number of FPL players classified within this position category.
+
+  - name: fixture
+    description: A single Premier League match. Carries raw home/away TEAM_ID -- resolved to names via fixture_to_home_team / fixture_to_away_team.
+    base_table:
+      database: FPL_ONTOLOGY_DB
+      schema: FPL_PRESENTATION
+      table: V_FIXTURE
+    primary_key:
+      columns:
+        - fixture_id
+    dimensions:
+      - name: fixture_id
+        expr: FIXTURE_ID
+        data_type: number
+        unique: true
+      - name: home_team_id
+        expr: HOME_TEAM
+        data_type: number
+        description: The unique identifier of the home team in this fixture.
+      - name: away_team_id
+        expr: AWAY_TEAM
+        data_type: number
+        description: The unique identifier of the away team in this fixture.
+    time_dimensions:
+      - name: kickoff_time
+        synonyms: ["match date"]
+        expr: KICKOFF_TIME
+        data_type: timestamp
+        description: The time the game is due to kick off in UTC.
+    measures:
+      - name: team_h_score
+        synonyms: ["home score"]
+        expr: TEAM_H_SCORE
+        data_type: number
+        default_aggregation: sum
+        description: The number of goals scored by the home team in this fixture.
+      - name: team_a_score
+        synonyms: ["away score"]
+        expr: TEAM_A_SCORE
+        data_type: number
+        default_aggregation: sum
+        description: The number of goals scored by the away team in this fixture.
+
+  - name: gameweek
+    description: Season-level metadata for a gameweek (deadline, average/highest score, transfer activity).
+    base_table:
+      database: FPL_ONTOLOGY_DB
+      schema: FPL_PRESENTATION
+      table: V_GAMEWEEK
+    primary_key:
+      columns:
+        - gameweek_id
+    dimensions:
+      - name: gameweek_id
+        expr: GAMEWEEK_ID
+        data_type: number
+        unique: true
+      - name: gameweek_name
+        expr: GAMEWEEK_NAME
+        data_type: text
+        description: The name of the gameweek.
+    measures:
+      - name: average_entry_score
+        synonyms: ["average team score"]
+        expr: AVERAGE_ENTRY_SCORE
+        data_type: number
+        default_aggregation: avg
+        description: Average points scored for all teams entered in this gameweek.
+      - name: highest_score
+        synonyms: ["top team score"]
+        expr: HIGHEST_SCORE
+        data_type: number
+        default_aggregation: max
+        description: Most points scored of all teams entered in this gameweek.
+      - name: transfers_made
+        expr: TRANSFERS_MADE
+        data_type: number
+        default_aggregation: sum
+        description: Number of transfers made by managers during this gameweek.
+
+relationships:
+  - name: performance_to_team
+    left_table: performance
+    right_table: team
+    relationship_columns:
+      - left_column: team_id
+        right_column: team_id
+    join_type: inner
+    relationship_type: many_to_one
+
+  - name: performance_to_gameweek
+    left_table: performance
+    right_table: gameweek
+    relationship_columns:
+      - left_column: gameweek_id
+        right_column: gameweek_id
+    join_type: inner
+    relationship_type: many_to_one
+
+  - name: performance_to_player
+    left_table: performance
+    right_table: player
+    relationship_columns:
+      - left_column: player_id
+        right_column: player_id
+    join_type: inner
+    relationship_type: many_to_one
+
+  - name: performance_to_fixture
+    left_table: performance
+    right_table: fixture
+    relationship_columns:
+      - left_column: fixture_id
+        right_column: fixture_id
+    join_type: left_outer
+    relationship_type: many_to_one
+
+  - name: fixture_to_home_team
+    left_table: fixture
+    right_table: team
+    relationship_columns:
+      - left_column: home_team_id
+        right_column: team_id
+    join_type: inner
+    relationship_type: many_to_one
+
+  - name: fixture_to_away_team
+    left_table: fixture
+    right_table: team
+    relationship_columns:
+      - left_column: away_team_id
+        right_column: team_id
+    join_type: inner
+    relationship_type: many_to_one
+
+verified_queries:
+  - name: top_scorers_this_gameweek
+    question: "Who scored the most FPL points in gameweek 10?"
+    sql: >
+      SELECT 
+        player_name, 
+        SUM(total_points) AS total_points
+      FROM __performance
+      WHERE gameweek_id = 10
+      GROUP BY player_name
+      ORDER BY total_points DESC
+      LIMIT 1;
+
+  - name: top_ten_scorers_this_gameweek
+    question: "Who were the top 10 highest scoring FPL players in gameweek 10?"
+    sql: >
+      SELECT 
+        player_name, 
+        SUM(total_points) AS total_points
+      FROM __performance
+      WHERE gameweek_id = 10
+      GROUP BY player_name
+      ORDER BY total_points DESC
+      LIMIT 10;
+
+  - name: top_scoring_forwards
+    question: "Which forwards have scored the most total goals this season?"
+    sql: >
+      SELECT 
+        player_name, 
+        SUM(goals_scored) AS total_goals
+      FROM __performance
+      WHERE position_short_name = 'FWD'
+      GROUP BY player_name
+      ORDER BY total_goals DESC
+      LIMIT 10;
+
+  - name: player_team_and_position
+    question: "What team and position does Erling Haaland play?"
+    sql: >
+      SELECT DISTINCT 
+        player_name, 
+        team_name, 
+        position_name
+      FROM __performance
+      WHERE player_name ILIKE '%Haaland%'
+      LIMIT 1;
+
+  - name: club_attack_strength
+    question: "Which clubs have the strongest home attack rating?"
+    sql: >
+      SELECT 
+        team_name, 
+        strength_attack_home
+      FROM __team
+      ORDER BY strength_attack_home DESC
+      LIMIT 10;
+
+  - name: easiest_fixtures
+    question: "Which clubs have the easiest fixtures between gameweek 10-14?"
+    sql: >
+      WITH fix AS (
+        SELECT 
+          f.home_team_id AS team_id, 
+          f.away_team_id AS oppo_team_id
+        FROM __fixture f
+        JOIN __performance p ON p.fixture_id = f.fixture_id
+        WHERE p.gameweek_id BETWEEN 10 AND 14
+        UNION ALL
+        SELECT 
+          f.away_team_id AS team_id, 
+          f.home_team_id AS oppo_team_id
+        FROM __fixture f
+        JOIN __performance p ON p.fixture_id = f.fixture_id
+        WHERE p.gameweek_id BETWEEN 10 AND 14
+      )
+      SELECT 
+        team.team_name, 
+        AVG(oppo.strength) AS average_strength
+      FROM fix
+      JOIN __team team ON fix.team_id = team.team_id
+      JOIN __team oppo ON fix.oppo_team_id = oppo.team_id
+      GROUP BY team.team_name
+      ORDER BY average_strength;
+
+  - name: forward_weakest_defence
+    question: "Which forwards are playing the weakest defence in gameweeks 15-17?"
+    sql: >
+      WITH fix AS (
+        SELECT 
+          f.home_team_id AS team_id, 
+          oppo.strength_defence_away AS opposition_defensive_strength
+        FROM __fixture f
+        JOIN __performance p ON p.fixture_id = f.fixture_id
+        JOIN __team oppo ON f.away_team_id = oppo.team_id
+        WHERE p.gameweek_id BETWEEN 15 AND 17
+        UNION ALL
+        SELECT 
+          f.away_team_id AS team_id, 
+          oppo.strength_defence_home AS opposition_defensive_strength
+        FROM __fixture f
+        JOIN __performance p ON p.fixture_id = f.fixture_id
+        JOIN __team oppo ON f.home_team_id = oppo.team_id
+        WHERE p.gameweek_id BETWEEN 15 AND 17
+      ),
+      opposition_strength AS (
+        SELECT 
+          team_id, 
+          AVG(opposition_defensive_strength) AS avg_opposition_def_strength
+        FROM fix
+        GROUP BY team_id
+      )
+      SELECT p.player_name, t.team_name, os.avg_opposition_def_strength
+      FROM opposition_strength os
+      JOIN __team t ON os.team_id = t.team_id
+      JOIN __performance p ON p.team_id = t.team_id
+      WHERE p.position_name = 'Forward'
+      GROUP BY p.player_name, t.team_name, os.avg_opposition_def_strength
+      ORDER BY os.avg_opposition_def_strength ASC;
+
+  - name: defender_weakest_attack
+    question: "Which defenders are playing the weakest attack in gameweeks 15-17?"
+    sql: >
+      WITH fix AS (
+        SELECT 
+          f.home_team_id AS team_id, 
+          oppo.strength_attack_away AS opposition_attacking_strength
+        FROM __fixture f
+        JOIN __performance p ON p.fixture_id = f.fixture_id
+        JOIN __team oppo ON f.away_team_id = oppo.team_id
+        WHERE p.gameweek_id BETWEEN 15 AND 17
+        UNION ALL
+        SELECT 
+          f.away_team_id AS team_id, 
+          oppo.strength_attack_home AS opposition_attacking_strength
+        FROM __fixture f
+        JOIN __performance p ON p.fixture_id = f.fixture_id
+        JOIN __team oppo ON f.home_team_id = oppo.team_id
+        WHERE p.gameweek_id BETWEEN 15 AND 17
+      ),
+      opposition_strength AS (
+        SELECT 
+          team_id, 
+          AVG(opposition_attacking_strength) AS avg_opposition_att_strength
+        FROM fix
+        GROUP BY team_id
+      )
+      SELECT p.player_name, t.team_name, os.avg_opposition_att_strength
+      FROM opposition_strength os
+      JOIN __team t ON os.team_id = t.team_id
+      JOIN __performance p ON p.team_id = t.team_id
+      WHERE p.position_name = 'Defender'
+      GROUP BY p.player_name, t.team_name, os.avg_opposition_att_strength
+      ORDER BY os.avg_opposition_att_strength ASC;
